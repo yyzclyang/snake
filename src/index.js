@@ -33,7 +33,7 @@ class Snake {
   /**
    * 游戏状态
    */
-  status = "play";
+  status = "pause";
   /**
    * 自动前进的定时器
    */
@@ -52,7 +52,6 @@ class Snake {
     this.renderMap();
     this.generateGem();
     this.renderSnake();
-    this.play();
     this.bindKeyboardClick();
   }
   /**
@@ -72,7 +71,6 @@ class Snake {
    * 移动
    */
   move() {
-    // console.log(this.direction);
     const snakeHead = this.snakeData[0];
     const snakeNewHead = ((direction) => {
       switch (direction) {
@@ -114,6 +112,17 @@ class Snake {
   bindKeyboardClick() {
     document.addEventListener("keyup", (e) => {
       switch (e.keyCode) {
+        // 空格
+        case 32: {
+          if (this.status === "play") {
+            clearTimeout(this.moveSetTimeout);
+            this.status = "pause";
+          } else {
+            this.play();
+            this.status = "play";
+          }
+          break;
+        }
         // 左箭头
         case 37: {
           if (this.direction === "right") {
@@ -231,4 +240,4 @@ class Snake {
   }
 }
 
-const snake = new Snake({ row: 10, column: 10 });
+const snake = new Snake({ row: 10, column: 20 });
