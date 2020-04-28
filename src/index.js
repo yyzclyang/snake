@@ -1,7 +1,8 @@
 class Snake {
-  constructor({ row, column }) {
+  constructor({ row, column, initSnake }) {
     this.row = row;
     this.column = column;
+    this.snakeData = initSnake;
     this.mountNode = document.getElementById("snake");
     this.init();
   }
@@ -43,10 +44,6 @@ class Snake {
    * 初始化
    */
   init() {
-    this.snakeData = [
-      [6, 7],
-      [6, 6]
-    ];
     this.direction = "right";
     this.status = "pause";
     this.renderMap();
@@ -283,4 +280,11 @@ class Snake {
   }
 }
 
-const snake = new Snake({ row: 10, column: 10 });
+const snake = new Snake({
+  row: 10,
+  column: 10,
+  initSnake: [
+    [6, 7],
+    [6, 6]
+  ]
+});
