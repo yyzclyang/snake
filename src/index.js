@@ -48,7 +48,7 @@ class Snake {
       [6, 6]
     ];
     this.direction = "right";
-    this.status = "play";
+    this.status = "pause";
     this.renderMap();
     this.generateGem();
     this.renderSnake();
@@ -59,13 +59,7 @@ class Snake {
    */
   play() {
     this.moveSetTimeout = setTimeout(() => {
-      this.move();
-      // 检查蛇头的位置
-      if (!this.checkSnakeHeadIsValidate()) {
-        clearTimeout(this.moveSetTimeout);
-        return;
-      }
-      this.play();
+      this.move() && this.play();
     }, 500);
   }
   /**
@@ -137,18 +131,30 @@ class Snake {
         `.row-${snakeNewHeadPosition[0]} > .column-${snakeNewHeadPosition[1]}`
       )
       .classList.add("map-snake-head");
+
+    // 检查蛇头的位置是否合法
+    if (!this.checkSnakeHeadIsValidate()) {
+      clearTimeout(this.moveSetTimeout);
+      this.status = "end";
+      return false;
+    }
+    return true;
   }
   bindKeyboardClick() {
     document.addEventListener("keyup", (e) => {
+      if (this.status === "end") {
+        return;
+      }
+      if (this.status === "pause") {
+        this.play();
+        this.status = "play";
+      }
       switch (e.keyCode) {
         // 空格
         case 32: {
           if (this.status === "play") {
             clearTimeout(this.moveSetTimeout);
             this.status = "pause";
-          } else {
-            this.play();
-            this.status = "play";
           }
           break;
         }
@@ -159,8 +165,7 @@ class Snake {
           }
           clearTimeout(this.moveSetTimeout);
           this.direction = "left";
-          this.move();
-          this.play();
+          this.move() && this.play();
           break;
         }
         // 向上箭头
@@ -170,8 +175,7 @@ class Snake {
           }
           clearTimeout(this.moveSetTimeout);
           this.direction = "top";
-          this.move();
-          this.play();
+          this.move() && this.play();
           break;
         }
         // 右箭头
@@ -181,8 +185,7 @@ class Snake {
           }
           clearTimeout(this.moveSetTimeout);
           this.direction = "right";
-          this.move();
-          this.play();
+          this.move() && this.play();
           break;
         }
         // 向下箭头
@@ -192,8 +195,7 @@ class Snake {
           }
           clearTimeout(this.moveSetTimeout);
           this.direction = "down";
-          this.move();
-          this.play();
+          this.move() && this.play();
           break;
         }
         default: {
