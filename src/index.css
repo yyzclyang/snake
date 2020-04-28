@@ -20,5 +20,8 @@
   background-color: black;
 }
 #snake > .map-row > .map-square.map-gem {
+  background-color: red;
+}
+#snake > .map-row > .map-square.map-snake-head {
   background-color: blue;
 }

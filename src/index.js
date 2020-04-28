@@ -60,6 +60,11 @@ class Snake {
   play() {
     this.moveSetTimeout = setTimeout(() => {
       this.move();
+      // 检查蛇头的位置
+      if (!this.checkSnakeHeadIsValidate()) {
+        clearTimeout(this.moveSetTimeout);
+        return;
+      }
       this.play();
     }, 500);
   }
@@ -71,31 +76,41 @@ class Snake {
    * 移动
    */
   move() {
-    const snakeHead = this.snakeData[0];
-    const snakeNewHead = ((direction) => {
+    const snakeHeadPosition = this.snakeData[0];
+    const snakeNewHeadPosition = ((direction) => {
       switch (direction) {
         case "top": {
-          return [(snakeHead[0] - 1 + this.row) % this.row, snakeHead[1]];
+          return [
+            (snakeHeadPosition[0] - 1 + this.row) % this.row,
+            snakeHeadPosition[1]
+          ];
         }
         case "down": {
-          return [(snakeHead[0] + 1 + this.row) % this.row, snakeHead[1]];
+          return [
+            (snakeHeadPosition[0] + 1 + this.row) % this.row,
+            snakeHeadPosition[1]
+          ];
         }
         case "left": {
-          return [snakeHead[0], (snakeHead[1] - 1 + this.column) % this.column];
+          return [
+            snakeHeadPosition[0],
+            (snakeHeadPosition[1] - 1 + this.column) % this.column
+          ];
         }
         case "right": {
-          return [snakeHead[0], (snakeHead[1] + 1 + this.column) % this.column];
+          return [
+            snakeHeadPosition[0],
+            (snakeHeadPosition[1] + 1 + this.column) % this.column
+          ];
         }
       }
     })(this.direction);
-    this.snakeData.unshift(snakeNewHead);
-    document
-      .querySelector(`.row-${snakeNewHead[0]} > .column-${snakeNewHead[1]}`)
-      .classList.add("map-snake");
+    this.snakeData.unshift(snakeNewHeadPosition);
 
+    // 前方有宝石，尾巴不缩减
     if (
-      snakeNewHead[0] === this.gemPosition[0] &&
-      snakeNewHead[1] === this.gemPosition[1]
+      snakeNewHeadPosition[0] === this.gemPosition[0] &&
+      snakeNewHeadPosition[1] === this.gemPosition[1]
     ) {
       const [gemRow, gemColumn] = this.gemPosition;
       document
@@ -103,11 +118,25 @@ class Snake {
         .classList.remove("map-gem");
       this.generateGem();
     } else {
-      const snakeEnd = this.snakeData.pop();
+      // 前方无宝石，尾巴缩减一格
+      const snakeEndPosition = this.snakeData.pop();
       document
-        .querySelector(`.row-${snakeEnd[0]} > .column-${snakeEnd[1]}`)
+        .querySelector(
+          `.row-${snakeEndPosition[0]} > .column-${snakeEndPosition[1]}`
+        )
         .classList.remove("map-snake");
     }
+    // 旧蛇头变蛇身，蛇头前进
+    const snakeOldHead = document.querySelector(
+      `.row-${snakeHeadPosition[0]} > .column-${snakeHeadPosition[1]}`
+    );
+    snakeOldHead.classList.remove("map-snake-head");
+    snakeOldHead.classList.add("map-snake");
+    document
+      .querySelector(
+        `.row-${snakeNewHeadPosition[0]} > .column-${snakeNewHeadPosition[1]}`
+      )
+      .classList.add("map-snake-head");
   }
   bindKeyboardClick() {
     document.addEventListener("keyup", (e) => {
@@ -208,6 +237,18 @@ class Snake {
       .classList.add("map-gem");
   }
   /**
+   * 检查蛇头的位置是否合法
+   */
+  checkSnakeHeadIsValidate() {
+    const [headRow, headColumn] = this.snakeData[0];
+    // 如果蛇头的位置数据有两个，说明蛇头与别的地方重合了，发生了碰撞
+    return (
+      this.snakeData.filter(([row, column]) => {
+        return row === headRow && column === headColumn;
+      }).length < 2
+    );
+  }
+  /**
    * 渲染地图
    */
   renderMap() {
@@ -231,13 +272,13 @@ class Snake {
    * @param {贪吃蛇数据} snakeData
    */
   renderSnake() {
-    this.snakeData.forEach(([row, column]) => {
+    this.snakeData.forEach(([row, column], index) => {
       const snakeBody = document.querySelector(
         `.row-${row} > .column-${column}`
       );
-      snakeBody.classList.add("map-snake");
+      snakeBody.classList.add(index === 0 ? "map-snake-head" : "map-snake");
     });
   }
 }
 
-const snake = new Snake({ row: 10, column: 20 });
+const snake = new Snake({ row: 10, column: 10 });
