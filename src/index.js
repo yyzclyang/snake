@@ -123,11 +123,11 @@ class Snake {
     );
     snakeOldHead.classList.remove("map-snake-head");
     snakeOldHead.classList.add("map-snake");
-    document
-      .querySelector(
-        `.row-${snakeNewHeadPosition[0]} > .column-${snakeNewHeadPosition[1]}`
-      )
-      .classList.add("map-snake-head");
+    const snakeNewHead = document.querySelector(
+      `.row-${snakeNewHeadPosition[0]} > .column-${snakeNewHeadPosition[1]}`
+    );
+    snakeNewHead.classList.add("map-snake-head");
+    snakeNewHead.classList.add(`snake-head-${this.direction}`);
 
     // 检查蛇头的位置是否合法
     if (!this.checkSnakeHeadIsValidate()) {
@@ -275,7 +275,12 @@ class Snake {
       const snakeBody = document.querySelector(
         `.row-${row} > .column-${column}`
       );
-      snakeBody.classList.add(index === 0 ? "map-snake-head" : "map-snake");
+      if (index === 0) {
+        snakeBody.classList.add("map-snake-head");
+        snakeBody.classList.add(`snake-head-${this.direction}`);
+      } else {
+        snakeBody.classList.add("map-snake");
+      }
     });
   }
 }
