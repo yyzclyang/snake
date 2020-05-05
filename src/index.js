@@ -28,6 +28,10 @@ class Snake {
    */
   snakeData = [];
   /**
+   * 贪吃蛇上一次的方向，用于控制蛇身的样式
+   */
+  previousDirection;
+  /**
    * 贪吃蛇的方向
    */
   direction;
@@ -44,6 +48,7 @@ class Snake {
    * 初始化
    */
   init() {
+    this.previousDirection = "";
     this.direction = "right";
     this.status = "pause";
     this.renderMap();
@@ -122,7 +127,9 @@ class Snake {
       `.row-${snakeHeadPosition[0]} > .column-${snakeHeadPosition[1]}`
     );
     snakeOldHead.classList.remove("map-snake-head");
+    snakeOldHead.classList.remove(`snake-head-${this.previousDirection}`);
     snakeOldHead.classList.add("map-snake");
+
     const snakeNewHead = document.querySelector(
       `.row-${snakeNewHeadPosition[0]} > .column-${snakeNewHeadPosition[1]}`
     );
@@ -161,7 +168,7 @@ class Snake {
             break;
           }
           clearTimeout(this.moveSetTimeout);
-          this.direction = "left";
+          this.changeDirection("left");
           this.move() && this.play();
           break;
         }
@@ -171,7 +178,7 @@ class Snake {
             break;
           }
           clearTimeout(this.moveSetTimeout);
-          this.direction = "top";
+          this.changeDirection("top");
           this.move() && this.play();
           break;
         }
@@ -181,7 +188,7 @@ class Snake {
             break;
           }
           clearTimeout(this.moveSetTimeout);
-          this.direction = "right";
+          this.changeDirection("right");
           this.move() && this.play();
           break;
         }
@@ -191,7 +198,7 @@ class Snake {
             break;
           }
           clearTimeout(this.moveSetTimeout);
-          this.direction = "down";
+          this.changeDirection("down");
           this.move() && this.play();
           break;
         }
@@ -205,6 +212,7 @@ class Snake {
    * @param {新方向} direction
    */
   changeDirection(direction) {
+    this.previousDirection = this.direction;
     this.direction = direction;
   }
   /**
